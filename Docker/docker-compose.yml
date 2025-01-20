@@ -1,16 +1,16 @@
-version: '3.9'
 services:
   postgres:
-    image: postgres:15
-    container_name: my_postgres
+    container_name: postgres
+    image: postgres:latest
+    restart: always
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: ultimatelibrary
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ultimatelibrary:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
 
 volumes:
-  postgres_data:
+  ultimatelibrary:
