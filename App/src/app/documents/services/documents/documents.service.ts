@@ -17,4 +17,9 @@ export class DocumentsService {
   getDocuments(options?: { headers: HttpHeaders }): Observable<Document[]> {
     return this.http.get<Document[]>(`${DOCUMENTS_URL}/`, options);
   }
+
+  getDocumentById(id: number, token?: string ) {
+    return this.http.get<Document>(`${DOCUMENTS_URL}/${id}/`);
+  }
+
 }
