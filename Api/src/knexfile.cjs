@@ -7,7 +7,7 @@ module.exports = {
 
   development: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: 'postgres://admin:admin@localhost:5432/ultimatelibrary',
     migrations: {
       directory: '../migrations',
     },
