@@ -1,0 +1,32 @@
+<div class="home-container">
+  <header class="home-header">
+    <div class="header-content">
+      <h1>Bienvenue à la Bibliothèque Numérique</h1>
+      <div class="auth-buttons">
+        <button *ngIf="isLoggedIn; else loginButton" class="btn" routerLink="/profile">Voir mon profil</button>
+        <ng-template #loginButton>
+          <button class="btn" routerLink="/login">Connexion</button>
+        </ng-template>
+      </div>
+    </div>
+    <p>Explorez une large gamme de documents et engagez-vous avec des quiz interactifs.</p>
+  </header>
+
+  <section class="features">
+    <div class="feature">
+      <h2>Bibliothèque Numérique</h2>
+      <p>Accédez à une variété de documents, y compris des livres, revues, mémoires et articles.</p>
+      <a routerLink="/library" class="btn">Explorer la Bibliothèque</a>
+    </div>
+    <div class="feature">
+      <h2>Quiz Interactifs</h2>
+      <p>Testez vos connaissances avec des quiz liés aux documents que vous lisez.</p>
+      <a routerLink="/quiz" class="btn">Faire un Quiz</a>
+    </div>
+    <div class="feature">
+      <h2>Points d'Activité & Badges</h2>
+      <p>Gagnez des points et des badges pour votre engagement et vos réalisations.</p>
+      <a routerLink="/profile" class="btn">Voir le Profil</a>
+    </div>
+  </section>
+</div>
