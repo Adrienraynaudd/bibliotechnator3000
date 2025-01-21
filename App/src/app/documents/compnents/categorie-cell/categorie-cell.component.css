@@ -1,0 +1,9 @@
+.categorie-cell {
+    padding: 1px 10px;
+    border-radius: 8px;
+    border: 3px outset rgb(188, 207, 243);
+    background-color: rgb(161, 197, 245);
+    font-size: 0.8rem;
+    border-style: outset;
+    width: auto;
+}

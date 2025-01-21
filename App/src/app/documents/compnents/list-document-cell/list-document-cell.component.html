@@ -1,4 +1,7 @@
 <div class="list-document-cell">
     <h3>{{document.title}}</h3>
     <p>{{document.synopsis}}</p>
+    <div class="list-categorie">
+        <app-categorie-cell [categorie]="document.category"/>
+    </div>
 </div>
