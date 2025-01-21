@@ -6,17 +6,20 @@ const router = express.Router();
 import {
   createUser,
   getUser,
+  getAllUsers,
   updateUser,
   deleteUser,
-} from "../controllers/User.js";
+} from "../controllers/user.js";
 
-// this route create a new note
+// this route create a new user
 router.post("/", createUser);
-// this route get all the notes by the user id
-router.get("/user/:userId", getUser);
-// this route update one note by the note id
+// this route get all users
+router.get("/", getAllUsers);
+// this route get the user by id
+router.get("/:id", getUser);
+// this route update one user by id
 router.put("/:id", updateUser);
-// this route remote one note by the note id
+// this route remove a user by id
 router.delete("/:id", deleteUser);
 
 export default router;

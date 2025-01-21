@@ -1,6 +1,6 @@
 import pg from "pg";
-// import logger from "../logger.js";
 const { Pool } = pg;
+import logger from "../lib/logger.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -10,14 +10,24 @@ const pool = new Pool({
 });
 
 export const createUser = async (request, response) => {
-  const { id, title, author, libraryId, categorie , UserLink } = request.body;
+  const { name, email, password } = request.body;
+
+
   try {
-    await pool.query(
-      `INSERT INTO User (id, title, author, libraryId, category, UserLink) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [id, title, author, libraryId, categorie , UserLink]
+    const { rows: flameRows } = await pool.query(
+      `INSERT INTO "flame" (date, "numberOfFlame") VALUES (CURRENT_DATE, 0) RETURNING id`
+    );
+    const flameID = flameRows[0].id;
+
+    // Insertion dans la table user
+    const { rows: userRows } = await pool.query(
+      `INSERT INTO "user" (name, email, password, "flameId") VALUES ($1, $2, $3, $4) RETURNING id`,
+      [name, email, password, flameID]
     );
 
-    response.status(201).send("User created");
+    const userID = userRows[0].id;
+
+    response.status(201).send("User " + userID + " created with flame ID: " + flameID);
   } catch (e) {
     logger.error(e.toString());
     response.status(500).send("Error: ", e.toString());
@@ -26,22 +36,22 @@ export const createUser = async (request, response) => {
 
 export const getUser = async (request, response) => {
   try {
-    await pool.query("SELECT * FROM User where id = $1", [
+    const { rows } = await pool.query(`SELECT * FROM "user" where id = $1`, [
       request.params.id,
     ]);
 
-    response.status(201).send("Data recovered well");
+    response.status(201).send(rows);
   } catch (e) {
     logger.error(e.toString());
     response.status(500).send("Error: ", e.toString());
   }
 };
 
-export const getAllUser = async (request, response) => {
+export const getAllUsers = async (request, response) => {
   try {
-    await pool.query("SELECT * FROM User");
+    const { rows } = await pool.query(`SELECT * FROM "user"`);
 
-    response.status(201).send("Data recovered well");
+    response.status(201).send(rows);
   } catch (e) {
     logger.error(e.toString());
     response.status(500).send("Error: ", e.toString());
@@ -50,12 +60,12 @@ export const getAllUser = async (request, response) => {
 
 export const updateUser = async (request, response) => {
   try {
-    const { title, author, libraryId, categorie } = request.body;
+    const { name, email, password } = request.body;
     const param_id = request.params.id;
 
     await pool.query(
-      "UPDATE User set title = $1, author = $2, libraryId = $3, catégorie = $4, updated_at = $5 WHERE id = $6",
-      [title, author, libraryId, categorie, updated_at, param_id]
+      `UPDATE "user" set name = $1, email = $2, password = $3 WHERE id = $6`,
+      [name, email, password, param_id]
     );
 
     response.status(201).send("Successfully updated");
@@ -67,7 +77,7 @@ export const updateUser = async (request, response) => {
 
 export const deleteUser = async (request, response) => {
   try {
-    await pool.query(`DELETE FROM User where id = $1`, [
+    await pool.query(`DELETE FROM "user" where id = $1`, [
       request.params.id,
     ]);
 
