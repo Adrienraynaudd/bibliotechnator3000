@@ -13,6 +13,9 @@ app.use(express.json());
 // Utilisation des routes
 app.use("/example", example_route);
 
+// Utilisation des routes
+app.use("/documents", example_route);
+
 app.listen(process.env.PORT, () => {
 //   logger.info(`Server is running on port ${process.env.PORT}`);
   console.log(`Server is running on port ${process.env.PORT}`);
