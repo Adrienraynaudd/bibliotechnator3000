@@ -10,11 +10,11 @@ const pool = new Pool({
 });
 
 export const createDocument = async (request, response) => {
-  const { id, title, author, libraryId, categorie } = request.body;
+  const { id, title, author, libraryId, categorie , documentLink } = request.body;
   try {
     await pool.query(
-      `INSERT INTO example (id, title, author, libraryId, category) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [id, title, author, libraryId, categorie]
+      `INSERT INTO document (id, title, author, libraryId, category, documentLink) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [id, title, author, libraryId, categorie , documentLink]
     );
 
     response.status(201).send("Document created");
@@ -26,9 +26,20 @@ export const createDocument = async (request, response) => {
 
 export const getDocument = async (request, response) => {
   try {
-    await pool.query("SELECT * FROM example where example_id = $1", [
+    await pool.query("SELECT * FROM document where id = $1", [
       request.params.id,
     ]);
+
+    response.status(201).send("Data recovered well");
+  } catch (e) {
+    logger.error(e.toString());
+    response.status(500).send("Error: ", e.toString());
+  }
+};
+
+export const getAllDocument = async (request, response) => {
+  try {
+    await pool.query("SELECT * FROM document");
 
     response.status(201).send("Data recovered well");
   } catch (e) {
@@ -43,7 +54,7 @@ export const updateDocument = async (request, response) => {
     const param_id = request.params.id;
 
     await pool.query(
-      "UPDATE example set title = $1, author = $2, libraryId = $3, catégorie = $4, updated_at = $5 WHERE id = $6",
+      "UPDATE document set title = $1, author = $2, libraryId = $3, catégorie = $4, updated_at = $5 WHERE id = $6",
       [title, author, libraryId, categorie, updated_at, param_id]
     );
 
@@ -56,7 +67,7 @@ export const updateDocument = async (request, response) => {
 
 export const deleteDocument = async (request, response) => {
   try {
-    await pool.query(`DELETE FROM example where example_id = $1`, [
+    await pool.query(`DELETE FROM document where id = $1`, [
       request.params.id,
     ]);
 
