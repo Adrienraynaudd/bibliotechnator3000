@@ -4,7 +4,7 @@ exports.up = function (knex) {
       table.string('name', 255).notNullable();
       table.string('email', 255).notNullable();
       table.uuid('flameId').notNullable();
-      table.uuid('favorites').notNullable();
+      table.uuid('favorites').nullable();
   
       table.foreign('flameId').references('id').inTable('flame').onDelete('CASCADE');
       table.foreign('favorites').references('id').inTable('document').onDelete('CASCADE');
