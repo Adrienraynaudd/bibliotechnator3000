@@ -1,6 +1,6 @@
 exports.up = function (knex) {
     return knex.schema.alterTable('user', function (table) {
-        table.text('password').notNullable();
+        table.string('password', 255).notNullable();
     });
 };
 
