@@ -18,8 +18,6 @@ app.use("/user", user_route);
 // Utilisation des routes
 app.use("/documents", document_route);
 
-// Utilisation des routes
-app.use("/documents", document_route);
 
 app.listen(process.env.PORT, () => {
 //   logger.info(`Server is running on port ${process.env.PORT}`);

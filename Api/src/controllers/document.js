@@ -9,7 +9,7 @@ dotenv.config();
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: "postgres://admin:admin@localhost:5432/ultimatelibrary",
 });
 
 const storage = multer.diskStorage({
@@ -37,6 +37,21 @@ const upload = multer({
   },
 });
 
+const createLibrary = async (request, response) => {
+  const { name } = request.body;
+
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO library (name) VALUES ($1) RETURNING *`,
+      [name]
+    );
+
+    response.status(201).json(rows[0]);
+  } catch (error) {
+    response.status(500).send("Error: " + error.message);
+  }
+};
+
 const createDocument = async (request, response) => {
   const uploadFile = upload.single("documentFile");
   uploadFile(request, response, async (err) => {
@@ -44,14 +59,14 @@ const createDocument = async (request, response) => {
       return response.status(400).send("Error uploading file: " + err.message);
     }
 
-    const { title, author, libraryId, category } = request.body;
+    const { title, author, library_id, category } = request.body;
     const documentLink = request.file ? request.file.filename : null;
 
     try {
       await pool.query(
-        `INSERT INTO document (title, author, libraryId, category, documentLink) 
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [title, author, libraryId, category, documentLink]
+        `INSERT INTO document (title, author, library_id, category, document_link) 
+         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [title, author, library_id, category, documentLink]
       );
 
       response.status(201).send("Document created with file");
@@ -65,16 +80,24 @@ const deleteDocument = async (request, response) => {
   const documentId = request.params.id;
 
   try {
-    const { rows } = await pool.query(`SELECT documentLink FROM document WHERE id = $1`, [documentId]);
+    const { rows } = await pool.query(`SELECT document_link FROM document WHERE id = $1`, [documentId]);
+
     if (rows.length === 0) {
       return response.status(404).send("Document not found");
     }
 
-    const documentLink = rows[0].documentLink;
+    const documentLink = rows[0].document_link;
+
+    if (!documentLink) {
+      return response.status(400).send("Document link not available");
+    }
+
     const filePath = path.join("uploads", documentLink);
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
+    } else {
+      return response.status(404).send("File not found");
     }
 
     await pool.query(`DELETE FROM document WHERE id = $1`, [documentId]);
@@ -87,7 +110,10 @@ const deleteDocument = async (request, response) => {
 
 const getDocument = async (request, response) => {
   try {
-    const { rows } = await pool.query(`SELECT * FROM document WHERE id = $1`, [request.params.id]);
+    const { rows } = await pool.query(
+      `SELECT * FROM document WHERE id = $1`,
+      [request.params.id]
+    );
 
     if (rows.length === 0) {
       return response.status(404).send("Document not found");
@@ -102,8 +128,7 @@ const getDocument = async (request, response) => {
 const getAllDocument = async (request, response) => {
   try {
     const { rows } = await pool.query(
-      `SELECT document.*, library.name as library_name, user.name as created_by_name 
-       FROM document`
+      `SELECT document.* FROM document`
     );
     response.status(200).json(rows);
   } catch (e) {
@@ -113,13 +138,13 @@ const getAllDocument = async (request, response) => {
 
 const updateDocument = async (request, response) => {
   try {
-    const { title, author, libraryId, category } = request.body;
+    const { title, author, library_id, category } = request.body;
     const param_id = request.params.id;
 
     await pool.query(
-      `UPDATE document SET title = $1, author = $2, libraryId = $3, category = $4
+      `UPDATE document SET title = $1, author = $2, library_id = $3, category = $4
        WHERE id = $5`,
-      [title, author, libraryId, category, param_id]
+      [title, author, library_id, category, param_id]
     );
 
     response.status(200).send("Successfully updated");
@@ -129,9 +154,10 @@ const updateDocument = async (request, response) => {
 };
 
 module.exports = {
+  createLibrary,
   createDocument,
   deleteDocument,
   getDocument,
   getAllDocument,
-  updateDocument,
+  updateDocument
 };

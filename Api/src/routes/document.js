@@ -3,6 +3,7 @@ const router = express.Router();
 
 import {
   createDocument,
+  createLibrary,
   getAllDocument,
   getDocument,
   updateDocument,
@@ -10,6 +11,7 @@ import {
 } from "../controllers/document.js";
 
 router.post("/", createDocument);
+router.post("/upload", createLibrary);
 
 router.get("/", getAllDocument);
 

@@ -3,12 +3,12 @@ exports.up = function (knex) {
       table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()')); // UUID primary key
       table.string('title', 255).notNullable();
       table.string('author', 255).notNullable();
-      table.uuid('libraryId').notNullable();
+      table.uuid('library_id').notNullable();
       table.text('category').notNullable();
-      table.string('documentLink', 255).notNullable();
+      table.string('document_link', 255).notNullable();
     //   table.uuid('createdBy').notNullable();
   
-      table.foreign('libraryId').references('id').inTable('library').onDelete('CASCADE');
+      table.foreign('library_id').references('id').inTable('library').onDelete('CASCADE');
     //   table.foreign('createdBy').references('id').inTable('user').onDelete('CASCADE');
     });
   };
