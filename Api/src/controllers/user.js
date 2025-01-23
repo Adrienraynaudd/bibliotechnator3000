@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const logger = require("../lib/logger.js")
+const dotenv = require("dotenv");
 
 const pool = new Pool();
 
