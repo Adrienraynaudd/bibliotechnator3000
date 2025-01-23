@@ -15,7 +15,8 @@ import { Router } from '@angular/router';
   templateUrl: './list-document.component.html',
   styleUrl: './list-document.component.css'
 })
-export class ListDocumentComponent implements OnInit{
+// implements OnInit
+export class ListDocumentComponent {
 
   protected documents: Document[] = [
     {
@@ -45,19 +46,19 @@ export class ListDocumentComponent implements OnInit{
 
   constructor(private readonly router: Router, private readonly _documentService: DocumentsService) { }
 
-  ngOnInit(): void {
-    this._documentService.getDocuments().subscribe({
-      next: (documents: Document[]) => {
-        this.documents = documents;
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
-  }
+  // ngOnInit(): void {
+  //   this._documentService.getDocuments().subscribe({
+  //     next: (documents: Document[]) => {
+  //       this.documents = documents;
+  //     },
+  //     error: (error) => {
+  //       console.error(error);
+  //     }
+  //   });
+  // }
 
   protected onDocumentClick(id: number): void {
-    this.router.navigate(['/documents', id]);
+    this.router.navigate(['/documents/document/:' + id]);
   }
 
 
