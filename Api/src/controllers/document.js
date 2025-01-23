@@ -1,11 +1,12 @@
-import pg from "pg";
-import multer from "multer";
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
+const pg = require("pg");
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const { Pool } = pg;
-dotenv.config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -36,7 +37,7 @@ const upload = multer({
   },
 });
 
-export const createDocument = async (request, response) => {
+const createDocument = async (request, response) => {
   const uploadFile = upload.single("documentFile");
   uploadFile(request, response, async (err) => {
     if (err) {
@@ -60,8 +61,7 @@ export const createDocument = async (request, response) => {
   });
 };
 
-
-export const deleteDocument = async (request, response) => {
+const deleteDocument = async (request, response) => {
   const documentId = request.params.id;
 
   try {
@@ -85,13 +85,9 @@ export const deleteDocument = async (request, response) => {
   }
 };
 
-
-export const getDocument = async (request, response) => {
+const getDocument = async (request, response) => {
   try {
-    const { rows } = await pool.query(
-      `SELECT * FROM document WHERE id = $1`,
-      [request.params.id]
-    );
+    const { rows } = await pool.query(`SELECT * FROM document WHERE id = $1`, [request.params.id]);
 
     if (rows.length === 0) {
       return response.status(404).send("Document not found");
@@ -103,8 +99,7 @@ export const getDocument = async (request, response) => {
   }
 };
 
-
-export const getAllDocument = async (request, response) => {
+const getAllDocument = async (request, response) => {
   try {
     const { rows } = await pool.query(
       `SELECT document.*, library.name as library_name, user.name as created_by_name 
@@ -116,7 +111,7 @@ export const getAllDocument = async (request, response) => {
   }
 };
 
-export const updateDocument = async (request, response) => {
+const updateDocument = async (request, response) => {
   try {
     const { title, author, libraryId, category, createdBy } = request.body;
     const param_id = request.params.id;
@@ -131,4 +126,12 @@ export const updateDocument = async (request, response) => {
   } catch (e) {
     response.status(500).send("Error: " + e.toString());
   }
+};
+
+module.exports = {
+  createDocument,
+  deleteDocument,
+  getDocument,
+  getAllDocument,
+  updateDocument,
 };
