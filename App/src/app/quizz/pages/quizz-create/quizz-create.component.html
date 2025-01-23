@@ -1,0 +1,31 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="name">Name:</label>
+      <input formControlName="type" id="name"/>
+    </div>
+  
+    <!-- Questions -->
+    <div formArrayName="questions" class="questions-group">
+      <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i" class="questions-group">
+        <label [for]="'question'+ (i + 1)">Question {{ i + 1 }}:</label>
+        <input formControlName="question" [id]="'question'+ (i + 1)"/>
+  
+        <!-- Answers -->
+        <div formArrayName="answers" class="answers-group">
+          <div *ngFor="let answer of getAnswers(i).controls; let j = index" class="answer">
+            <label [for]="'answer'+ (j + 1)">Answer {{ j + 1 }}:</label>
+            <input [formControlName]="j" [id]="'answer'+ (j + 1)"/>
+            <button *ngIf="j > 1" type="button" (click)="removeAnswer(i, j)">X</button>
+          </div>
+        </div>
+        <button type="button" (click)="addAnswer(i)">Add Answer</button>
+        <label [for]="'correct'+ (i + 1)">Correct Answer:</label>
+        <input type="number" min="1" formControlName="correctAnswer" id="'correct'+ (j + 1)"/>
+  
+        <button *ngIf="i > 0" type="button" (click)="removeQuestion(i)">Remove Question</button>
+      </div>
+      <button type="button" (click)="addQuestion()">Add Question</button>
+    </div>
+  
+    <button type="submit" [disabled]="form.invalid">Submit</button>
+  </form>

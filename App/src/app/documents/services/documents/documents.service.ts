@@ -14,8 +14,7 @@ export class DocumentsService {
 
   constructor(private readonly http: HttpClient) {}
 
-  @needToken
-  getDocuments(token?: string, options?: { headers: HttpHeaders }): Observable<Document[]> {
+  getDocuments(options?: { headers: HttpHeaders }): Observable<Document[]> {
     return this.http.get<Document[]>(`${DOCUMENTS_URL}/`, options);
   }
 }

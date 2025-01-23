@@ -1,0 +1,15 @@
+<div class="quizz">
+    <ng-container *ngIf="!gameStarted">
+        <button (click)="startGame()">Start Game</button>
+    </ng-container>
+
+    <ng-container *ngIf="gameStarted && !gameOver">
+        <app-quizz-question [question]="quizz.questions[currentQuestion].question" [answers]="quizz.questions[currentQuestion].answers.split(',')" (answer)="onAnswer($event)"></app-quizz-question>
+    </ng-container>
+
+    <ng-container *ngIf="gameStarted && gameOver">
+        <h1>Game Over</h1>
+        <p>Your score is {{ score }}</p>
+        <button (click)="startGame()">Play Again</button>
+    </ng-container>
+</div>
