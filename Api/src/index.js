@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import example_route from "./routes/example.js";
+import user_route from "./routes/user.js";
 
 dotenv.config();
 const app = express();
@@ -11,9 +11,11 @@ console.clear();
 app.use(express.json());
 
 // Utilisation des routes
-app.use("/example", example_route);
+app.use("/user", user_route);
 
 app.listen(process.env.PORT, () => {
 //   logger.info(`Server is running on port ${process.env.PORT}`);
   console.log(`Server is running on port ${process.env.PORT}`);
 });
+
+

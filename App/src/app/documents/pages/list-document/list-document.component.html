@@ -1,0 +1,3 @@
+<div class="documents-conteiner">
+    <app-list-document-cell *ngFor="let document of documents" [document]="document" (click)="onDocumentClick(document.id)"/>
+</div>
