@@ -127,3 +127,26 @@ export const deleteQuiz = async (request, response) => {
     response.status(500).send("Error: " + e.toString());
   }
 };
+
+export const getQuizzesByDocumentId = async (request, response) => {
+  const { id } = request.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT id, type, maxScore 
+       FROM quiz 
+       WHERE documentId = $1`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return response.status(404).send({ message: "No quizzes found for the specified document" });
+    }
+
+    response.status(200).send(result.rows);
+  } catch (e) {
+    // logger.error(e.toString());
+    console.error(e.toString());
+    response.status(500).send("Error: " + e.toString());
+  }
+};
