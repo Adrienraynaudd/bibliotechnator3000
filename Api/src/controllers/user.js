@@ -1,89 +1,115 @@
-import pg from "pg";
-const { Pool } = pg;
-import logger from "../lib/logger.js";
-import dotenv from "dotenv";
+const { Pool } = require("pg");
+const logger = require("../lib/logger.js")
 
-dotenv.config();
+const pool = new Pool();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export const createUser = async (request, response) => {
+const createUser = async (request, response) => {
   const { name, email, password } = request.body;
-
-
+  const route = "POST /user";
   try {
-    const { rows: flameRows } = await pool.query(
-      `INSERT INTO "flame" (date, "numberOfFlame") VALUES (CURRENT_DATE, 0) RETURNING id`
+    const userQuery = await pool.query(
+      "INSERT INTO \"user\" (name, email, password) VALUES ($1, $2, $3) RETURNING *",
+      [name, email, password]
     );
-    const flameID = flameRows[0].id;
+    const user = userQuery.rows[0];
+    logger.info(`${route} - ${JSON.stringify(user)}`);
+    response.status(201).json(user);
+  } catch (e) {
+    logger.error(`${route} - ${e.toString()}`);
+    response.status(500).send("Error: ");
+  }
+};
 
-    // Insertion dans la table user
-    const { rows: userRows } = await pool.query(
-      `INSERT INTO "user" (name, email, password, "flameId") VALUES ($1, $2, $3, $4) RETURNING id`,
-      [name, email, password, flameID]
+const getUser = async (request, response) => {
+  const { id } = request.params;
+  const route = `GET /user/${id}`;
+  try {
+    const userQuery = await pool.query("SELECT * FROM \"user\" WHERE id = $1", [id]);
+    const user = userQuery.rows[0];
+    if (!user) {
+      response.status(404).send("User not found");
+      return;
+    }
+    logger.info(`${route} - ${JSON.stringify(user)}`);
+    response.status(200).json(user);
+  } catch (e) {
+    logger.error(`${route} - ${e.toString()}`);
+    response.status(500).send("Error: ");
+  }
+};
+
+const getAllUsers = async (request, response) => {
+  const route = "GET /user";
+  try {
+    const userQuery = await pool.query("SELECT * FROM \"user\"");
+    const users = userQuery.rows;
+    logger.info(`${route} - ${JSON.stringify(users)}`);
+    response.status(200).json(users);
+  } catch (e) {
+    logger.error(`${route} - ${e.toString()}`);
+    response.status(500).send("Error: ");
+  }
+};
+
+const deleteUser = async (request, response) => {
+  const { id } = request.params;
+  const route = `DELETE /user/${id}`;
+  try {
+    const userQuery = await pool.query("SELECT email FROM \"user\" WHERE id = $1", [id]);
+    const user = userQuery.rows[0];
+    if (!user) {
+      response.status(404).send("User not found");
+      return;
+    }
+    await pool.query("DELETE FROM \"user\" WHERE id = $1", [id]);
+    logger.info(`${route} - User deleted`);
+    response.status(201).send("User deleted");
+    return;
+  } catch (e) {
+    logger.error(`${route} - ${e.toString()}`);
+    response.status(500).send("Error: ");
+    return;
+  }
+};
+
+const updateUser = async (request, response) => {
+  const { id } = request.params;
+  const { name, email, password } = request.body;
+  const route = `PUT /user/${id}`;
+  try {
+    const userQuery = await pool.query("SELECT email FROM \"user\" WHERE id = $1", [id]);
+
+    // Vérification si l'utilisateur existe
+    if (!userQuery.rows || userQuery.rows.length === 0) {
+      response.status(404).send("User not found");
+      return;
+    }
+
+    const updateQuery = await pool.query(
+      "UPDATE \"user\" SET name = $1, email = $2, password = $3 WHERE id = $4 RETURNING *",
+      [name, email, password, id]
     );
 
-    const userID = userRows[0].id;
+    // Vérification si la mise à jour a retourné un utilisateur
+    if (!updateQuery.rows || updateQuery.rows.length === 0) {
+      response.status(500).send("Failed to update user");
+      return;
+    }
 
-    response.status(201).send("User " + userID + " created with flame ID: " + flameID);
+    const updatedUser = updateQuery.rows[0];
+    logger.info(`${route} - ${JSON.stringify(updatedUser)}`);
+    response.status(201).json(updatedUser);
   } catch (e) {
-    logger.error(e.toString());
-    response.status(500).send("Error: ", e.toString());
+    logger.error(`${route} - ${e.toString()}`);
+    response.status(500).send("Error: ");
   }
 };
 
-export const getUser = async (request, response) => {
-  try {
-    const { rows } = await pool.query(`SELECT * FROM "user" where id = $1`, [
-      request.params.id,
-    ]);
 
-    response.status(201).send(rows);
-  } catch (e) {
-    logger.error(e.toString());
-    response.status(500).send("Error: ", e.toString());
-  }
-};
-
-export const getAllUsers = async (request, response) => {
-  try {
-    const { rows } = await pool.query(`SELECT * FROM "user"`);
-
-    response.status(201).send(rows);
-  } catch (e) {
-    logger.error(e.toString());
-    response.status(500).send("Error: ", e.toString());
-  }
-};
-
-export const updateUser = async (request, response) => {
-  try {
-    const { name, email, password } = request.body;
-    const param_id = request.params.id;
-
-    await pool.query(
-      `UPDATE "user" set name = $1, email = $2, password = $3 WHERE id = $6`,
-      [name, email, password, param_id]
-    );
-
-    response.status(201).send("Successfully updated");
-  } catch (e) {
-    logger.error(e.toString());
-    response.status(500).send("Error: ", e.toString());
-  }
-};
-
-export const deleteUser = async (request, response) => {
-  try {
-    await pool.query(`DELETE FROM "user" where id = $1`, [
-      request.params.id,
-    ]);
-
-    response.status(201).send("Successfully delete");
-  } catch (e) {
-    logger.error(e.toString());
-    response.status(500).send("Error: ", e.toString());
-  }
+module.exports = {
+  createUser,
+  getUser,
+  getAllUsers,
+  deleteUser,
+  updateUser,
 };
