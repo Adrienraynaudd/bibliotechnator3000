@@ -44,14 +44,14 @@ const createDocument = async (request, response) => {
       return response.status(400).send("Error uploading file: " + err.message);
     }
 
-    const { title, author, libraryId, category, createdBy } = request.body;
+    const { title, author, libraryId, category } = request.body;
     const documentLink = request.file ? request.file.filename : null;
 
     try {
       await pool.query(
-        `INSERT INTO document (title, author, libraryId, category, documentLink, createdBy) 
+        `INSERT INTO document (title, author, libraryId, category, documentLink) 
          VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [title, author, libraryId, category, documentLink, createdBy]
+        [title, author, libraryId, category, documentLink]
       );
 
       response.status(201).send("Document created with file");
@@ -113,13 +113,13 @@ const getAllDocument = async (request, response) => {
 
 const updateDocument = async (request, response) => {
   try {
-    const { title, author, libraryId, category, createdBy } = request.body;
+    const { title, author, libraryId, category } = request.body;
     const param_id = request.params.id;
 
     await pool.query(
-      `UPDATE document SET title = $1, author = $2, libraryId = $3, category = $4, createdBy = $5
-       WHERE id = $6`,
-      [title, author, libraryId, category, createdBy, param_id]
+      `UPDATE document SET title = $1, author = $2, libraryId = $3, category = $4
+       WHERE id = $5`,
+      [title, author, libraryId, category, param_id]
     );
 
     response.status(200).send("Successfully updated");

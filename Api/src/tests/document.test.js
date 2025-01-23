@@ -33,7 +33,7 @@ describe("Document API", () => {
 
     const response = await request(app)
       .post("/documents")
-      .send({ title: "Test Doc", author: "John Doe", libraryId: 1, category: "Fiction", createdBy: 1 });
+      .send({ title: "Test Doc", author: "John Doe", libraryId: 1, category: "Fiction" });
 
     expect(response.status).toBe(201);
     expect(response.text).toBe("Document created with file");
@@ -63,14 +63,14 @@ describe("Document API", () => {
   it("should get all documents", async () => {
     const pool = new Pool();
     pool.query.mockResolvedValueOnce({
-      rows: [{ id: 1, title: "Test Doc", library_name: "Library 1", created_by_name: "Admin" }],
+      rows: [{ id: 1, title: "Test Doc", library_name: "Library 1"}],
     });
 
     const response = await request(app).get("/documents");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
-      { id: 1, title: "Test Doc", library_name: "Library 1", created_by_name: "Admin" },
+      { id: 1, title: "Test Doc", library_name: "Library 1" },
     ]);
   });
 
@@ -80,7 +80,7 @@ describe("Document API", () => {
 
     const response = await request(app)
       .put("/documents/1")
-      .send({ title: "Updated Doc", author: "John Doe", libraryId: 1, category: "Non-Fiction", createdBy: 1 });
+      .send({ title: "Updated Doc", author: "John Doe", libraryId: 1, category: "Non-Fiction"});
 
     expect(response.status).toBe(200);
     expect(response.text).toBe("Successfully updated");
