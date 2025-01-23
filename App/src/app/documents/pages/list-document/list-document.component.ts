@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgFor } from '@angular/common';
 
 import { DocumentsService } from '../../services/documents/documents.service';
@@ -15,9 +15,33 @@ import { Router } from '@angular/router';
   templateUrl: './list-document.component.html',
   styleUrl: './list-document.component.css'
 })
-export class ListDocumentComponent {
+export class ListDocumentComponent implements OnInit{
 
-  protected documents: Document[] = [];
+  protected documents: Document[] = [
+    {
+          id: 1,
+          title: "testitle",
+          documentLink: "testkcty",
+          category: "testètiru",
+          synopsis: "testestest",
+          library: {
+            id: 1,
+            name: "nomlib"
+          }
+    },
+    {
+      id: 2,
+      title: "testitle2",
+      documentLink: "testkcty2",
+      category: "testètiru2",
+      synopsis: "testestest2",
+      library: {
+        id: 2,
+        name: "nomlib2"
+      }
+},
+
+  ];
 
   constructor(private readonly router: Router, private readonly _documentService: DocumentsService) { }
 
