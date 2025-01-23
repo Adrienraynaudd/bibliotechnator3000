@@ -1,0 +1,55 @@
+form
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: min(10vh, 10vw);
+    width: calc(100% - min(10vh, 10vw) * 2);
+}
+
+.questions-group
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.questions-group button
+{
+    height: 1.25rem;
+    border-radius: .5rem;
+    background-color: rgb(194, 194, 211);
+    color: rgb(0, 0, 24);
+    border: rgb(194, 194, 211) 1px outset;
+}
+
+.answers-group
+{
+    margin: 3rem .5rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.answer
+{
+    width: 45%;
+}
+
+.answer input
+{
+    width: calc(100% - 6rem);
+}
+
+.answer button
+{
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    border: red 1px outset;
+}

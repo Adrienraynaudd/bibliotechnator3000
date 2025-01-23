@@ -1,0 +1,23 @@
+.answers, .question {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+.answers button {
+    padding: 10px 20px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.answers button:hover {
+    background-color: #000;
+    color: #fff;
+}
