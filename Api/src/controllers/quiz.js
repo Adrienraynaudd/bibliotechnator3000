@@ -1,152 +1,110 @@
 import pg from "pg";
-// import logger from "../logger.js";
-const { Pool } = pg;
+import logger from "../logger.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
+const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Create a new quiz
-export const createQuiz = async (request, response) => {
-  const { type, maxScore, documentId, questionIds } = request.body;
-
-  try {
-    // Insert into quiz table
-    const result = await pool.query(
-      `INSERT INTO quiz (id, type, maxScore, documentId) VALUES (gen_random_uuid(), $1, $2, $3) RETURNING id`,
-      [type, maxScore, documentId]
-    );
-
-    const quizId = result.rows[0].id;
-
-    // Insert related questions
-    if (questionIds && questionIds.length > 0) {
-      for (const questionId of questionIds) {
-        await pool.query(
-          `INSERT INTO quiz_questions (quiz_id, question_id) VALUES ($1, $2)`,
-          [quizId, questionId]
-        );
-      }
-    }
-
-    response.status(201).send({ message: "Quiz created", quizId });
-  } catch (e) {
-    // logger.error(e.toString());
-    console.error(e.toString());
-    response.status(500).send("Error: " + e.toString());
-  }
-};
-
-// Get all quizzes
-export const getQuizzes = async (request, response) => {
+export const getQuizzes = async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM quiz");
-
-    response.status(200).send(result.rows);
-  } catch (e) {
-    // logger.error(e.toString());
-    console.error(e.toString());
-    response.status(500).send("Error: " + e.toString());
+    res.status(200).json(result.rows);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Failed to fetch quizzes" });
   }
 };
 
-// Get a single quiz by ID (without questions)
-export const getQuizById = async (request, response) => {
-  const { id } = request.params;
+export const getQuizById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM quiz WHERE id = $1", [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Quiz not found" });
+    }
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Failed to fetch quiz" });
+  }
+};
 
+export const getQuizzesByDocumentId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM quiz WHERE documentId = $1", [id]);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Failed to fetch quizzes for the document" });
+  }
+};
+
+export const createQuiz = async (req, res) => {
+  const { type, max_score, documentId, questions } = req.body;
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const quizResult = await client.query(
+      "INSERT INTO quiz (type, max_score, documentId) VALUES ($1, $2, $3) RETURNING *",
+      [type, max_score, documentId]
+    );
+
+    const quizId = quizResult.rows[0].id;
+
+    for (const question of questions) {
+      const { type: questionType, question: questionText, answers, good_answer } = question;
+      await client.query(
+        "INSERT INTO question (type, question, answers, good_answer, quiz_id) VALUES ($1, $2, $3, $4, $5)",
+        [questionType, questionText, JSON.stringify(answers), good_answer, quizId]
+      );
+    }
+
+    await client.query("COMMIT");
+    res.status(201).json(quizResult.rows[0]);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    logger.error(error);
+    res.status(500).json({ error: "Failed to create quiz and questions" });
+  } finally {
+    client.release();
+  }
+};
+
+export const updateQuiz = async (req, res) => {
+  const { id } = req.params;
+  const { type, max_score, documentId } = req.body;
   try {
     const result = await pool.query(
-      `SELECT id, type, maxScore, documentId FROM quiz WHERE id = $1`,
-      [id]
+      "UPDATE quiz SET type = $1, max_score = $2, documentId = $3 WHERE id = $4 RETURNING *",
+      [type, max_score, documentId, id]
     );
-
     if (result.rows.length === 0) {
-      return response.status(404).send({ message: "Quiz not found" });
+      return res.status(404).json({ error: "Quiz not found" });
     }
-
-    response.status(200).send(result.rows[0]);
-  } catch (e) {
-    // logger.error(e.toString());
-    console.error(e.toString());
-    response.status(500).send("Error: " + e.toString());
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Failed to update quiz" });
   }
 };
 
-// Update a quiz
-export const updateQuiz = async (request, response) => {
-  const { type, maxScore, documentId, questionIds } = request.body;
-  const { id } = request.params;
-
+export const deleteQuiz = async (req, res) => {
+  const { id } = req.params;
   try {
-    // Update quiz table
-    await pool.query(
-      `UPDATE quiz SET type = $1, maxScore = $2, documentId = $3, updated_at = NOW() WHERE id = $4`,
-      [type, maxScore, documentId, id]
-    );
-
-    // Update related questions
-    if (questionIds && questionIds.length > 0) {
-      // Remove existing questions for the quiz
-      await pool.query(`DELETE FROM quiz_questions WHERE quiz_id = $1`, [id]);
-
-      // Add new questions
-      for (const questionId of questionIds) {
-        await pool.query(
-          `INSERT INTO quiz_questions (quiz_id, question_id) VALUES ($1, $2)`,
-          [id, questionId]
-        );
-      }
-    }
-
-    response.status(200).send({ message: "Quiz updated successfully" });
-  } catch (e) {
-    // logger.error(e.toString());
-    console.error(e.toString());
-    response.status(500).send("Error: " + e.toString());
-  }
-};
-
-// Delete a quiz
-export const deleteQuiz = async (request, response) => {
-  const { id } = request.params;
-
-  try {
-    // Delete questions associated with the quiz
-    await pool.query(`DELETE FROM quiz_questions WHERE quiz_id = $1`, [id]);
-
-    // Delete the quiz itself
-    await pool.query(`DELETE FROM quiz WHERE id = $1`, [id]);
-
-    response.status(200).send({ message: "Quiz deleted successfully" });
-  } catch (e) {
-    // logger.error(e.toString());
-    console.error(e.toString());
-    response.status(500).send("Error: " + e.toString());
-  }
-};
-
-export const getQuizzesByDocumentId = async (request, response) => {
-  const { id } = request.params;
-
-  try {
-    const result = await pool.query(
-      `SELECT id, type, maxScore 
-       FROM quiz 
-       WHERE documentId = $1`,
-      [id]
-    );
-
+    const result = await pool.query("DELETE FROM quiz WHERE id = $1 RETURNING *", [id]);
     if (result.rows.length === 0) {
-      return response.status(404).send({ message: "No quizzes found for the specified document" });
+      return res.status(404).json({ error: "Quiz not found" });
     }
-
-    response.status(200).send(result.rows);
-  } catch (e) {
-    // logger.error(e.toString());
-    console.error(e.toString());
-    response.status(500).send("Error: " + e.toString());
+    res.status(200).json({ message: "Quiz deleted successfully" });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ error: "Failed to delete quiz" });
   }
 };
