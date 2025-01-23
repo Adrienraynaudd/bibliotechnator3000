@@ -3,7 +3,7 @@ const { Pool } = pg;
 const { generateAccessToken } = require("../lib/token.js");
 const bcrypt = require("bcrypt")
 const logger = require("../lib/logger.js")
-const dotenv = "dotenv";
+const dotenv = require("dotenv");
 
 dotenv.config();
 
