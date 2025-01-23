@@ -5,4 +5,9 @@
         <p>{{category}}</p>
         <p>{{synopsis}}</p>
     </div>
+    <div class="list-quizz">
+        <div *ngFor="let quizz of quizzs">
+            <app-quizz-cell [quizz]="quizz" (click)="onQuizzClick(quizz.id)"></app-quizz-cell>
+        </div>
+    </div>
 </section>
