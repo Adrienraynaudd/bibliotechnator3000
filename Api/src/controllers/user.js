@@ -1,5 +1,5 @@
 const { Pool } = require("pg");
-const logger = require("../lib/logger.js")
+const logger = require("../lib/logger");
 
 const pool = new Pool();
 
