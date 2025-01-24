@@ -48,7 +48,7 @@ const createDocument = async (request, response) => {
     }
 
     const { title, author, library_id, category } = request.body;
-    const documentLink = request.file ? BASE_URL + request.file.filename : null;
+    const documentLink = request.file ? request.file.filename : null;
 
     try {
       const result = await pool.query(
@@ -77,8 +77,9 @@ const downloadFile = async (req, res) => {
 
     const document = result.rows[0];
 
-    const filePath = path.join(__dirname, "uploads", document.document_link);
+    const filePath = path.join(__dirname, "..", "..", "uploads", document.document_link);
     if (!fs.existsSync(filePath)) {
+      console.log(filePath);
       return res.status(404).send("File not found");
     }
 

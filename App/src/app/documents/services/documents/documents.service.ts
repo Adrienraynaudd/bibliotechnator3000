@@ -13,22 +13,26 @@ import { Quizz } from '../../../quizz/models/quizz';
 export class DocumentsService {
   token: string | undefined;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   getDocuments(options?: { headers: HttpHeaders }): Observable<Document[]> {
     return this.http.get<Document[]>(`${DOCUMENTS_URL}/`, options);
   }
 
-  getDocumentById(id: string, token?: string ) {
+  getDocumentById(id: string, token?: string) {
     return this.http.get<Document>(`${DOCUMENTS_URL}/${id}/`);
   }
 
-postDocument(formData: FormData): Observable<Document> {
-  return this.http.post<Document>(`${DOCUMENTS_URL}/`, formData);
-}
+  postDocument(formData: FormData): Observable<Document> {
+    return this.http.post<Document>(`${DOCUMENTS_URL}/`, formData);
+  }
 
   getQuizzsByDocumentId(documentId: string, options?: { headers: HttpHeaders }): Observable<Quizz[]> {
     return this.http.get<Quizz[]>(`${DOCUMENTS_URL}/${documentId}/quiz`, options);
+  }
+
+  downloadDocument(documentId: string, token?: string): Observable<Blob> {
+    return this.http.get(`${DOCUMENTS_URL}/${documentId}/download`, { responseType: 'blob' });
   }
 
 }
