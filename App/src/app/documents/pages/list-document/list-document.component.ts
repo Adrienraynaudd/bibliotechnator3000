@@ -29,7 +29,7 @@ export class ListDocumentComponent {
   }
 
   protected onDocumentClick(id: number): void {
-    this.router.navigate(['/documents', id]);
+    this.router.navigate(['/documents/' + id]);
   }
 
 

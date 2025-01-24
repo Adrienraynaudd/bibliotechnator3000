@@ -33,10 +33,8 @@ export class DetailComponent implements OnInit{
   constructor(private readonly _documentService: DocumentsService, private readonly route: ActivatedRoute, private readonly router: Router) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.documentId = +params['id']; 
-      this.getDocumentDetails(this.documentId);
-    });
+    this.documentId = +this.router.url.split('/')[2]; 
+    this.getDocumentDetails(this.documentId);
   }
   
 
@@ -55,8 +53,15 @@ export class DetailComponent implements OnInit{
   }
 
   onQuizzClick(id: number): void {
-    console.log('Quizz clicked', id);
-    this.router.navigate(['/documents/quizz/:' + id]);
+    this.router.navigate(['/quizz/' + id]);
+  }
+
+  onCreateQuizz(): void {
+    this.router.navigate([`/quizz/create/${this.documentId}`]);
+  }
+
+  onBack(): void {
+    this.router.navigate(['/documents']);
   }
 
 }

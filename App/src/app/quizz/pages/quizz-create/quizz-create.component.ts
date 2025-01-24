@@ -95,13 +95,17 @@ export class QuizzCreateComponent {
       })
     } as Quizz;
     this._quizzService.createQuizz(quizz).subscribe({
-      next: (quizz: Quizz) => {
-        this.router.navigate([`/documents/${this.router.url.split('/')[2]}/`, quizz.id]);
+      next: () => {
+        this.onBack();
       },
       error: (error: any) => {
         console.error(error);
       }
     });
+  }
+
+  onBack(): void {
+    this.router.navigate([`/documents/${this.router.url.split('/')[3]}/`]);
   }
 
 }
