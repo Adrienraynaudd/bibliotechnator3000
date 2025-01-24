@@ -1,7 +1,16 @@
-<form [formGroup]="form" (submit)="submitForm()" class="form">
-    <input type="text" class="inputTitle" placeholder="Title" name="title" required formGroupName="title">
-    <input type="text" class="inputAuthor" placeholder="Author" name="author" required formGroupName="author">
-    <input type="text" class="inputCategorie" placeholder="Categorie" name="categorie" required formGroupName="category">
-    <input type="name" class="inputDocumentLink" name="documentLink" required formGroupName="file">
-    <button class="btnSubmit" type="submit">Submit</button>
-</form>
+<form [formGroup]="form" (ngSubmit)="submitForm()" class="form">
+    <label for="title">Title</label>
+    <input type="text" id="title" class="inputTitle" placeholder="Title" name="title" required formControlName="title">
+  
+    <label for="author">Author</label>
+    <input type="text" id="author" class="inputAuthor" placeholder="Author" name="author" required formControlName="author">
+  
+    <label for="category">Category</label>
+    <input type="text" id="category" class="inputCategorie" placeholder="Category" name="category" required formControlName="category">
+  
+    <label for="file">Upload Document</label>
+    <input type="file" id="file" class="inputDocumentLink" name="documentLink" accept="application/pdf" (change)="onFileSelect($event)" required>
+  
+    <button class="btnSubmit" type="submit" [disabled]="form.invalid">Submit</button>
+  </form>
+  

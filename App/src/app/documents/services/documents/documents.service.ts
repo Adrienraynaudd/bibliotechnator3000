@@ -23,10 +23,10 @@ export class DocumentsService {
     return this.http.get<Document>(`${DOCUMENTS_URL}/${id}/`);
   }
 
-  postDocument(document: Document, token?: string) {
-    return this.http.post<Document>(`${DOCUMENTS_URL}/`, document);
-  }
-  
+postDocument(formData: FormData): Observable<Document> {
+  return this.http.post<Document>(`${DOCUMENTS_URL}/`, formData);
+}
+
   getQuizzsByDocumentId(documentId: string, options?: { headers: HttpHeaders }): Observable<Quizz[]> {
     return this.http.get<Quizz[]>(`${DOCUMENTS_URL}/${documentId}/quiz`, options);
   }

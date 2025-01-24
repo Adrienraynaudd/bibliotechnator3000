@@ -10,6 +10,7 @@ import { Quizz } from '../../../quizz/models/quizz';
 
 @Component({
   selector: 'app-detail',
+  standalone: true,
   imports: [
     NgFor,
     QuizzCellComponent

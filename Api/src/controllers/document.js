@@ -48,13 +48,12 @@ const createDocument = async (request, response) => {
     const documentLink = request.file ? request.file.filename : null;
 
     try {
-      await pool.query(
+      const result = await pool.query(
         `INSERT INTO document (title, author, library_id, category, document_link) 
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
         [title, author, library_id, category, documentLink]
       );
-
-      response.status(201).send("Document created with file");
+      response.status(201).json(result.rows[0]);
     } catch (e) {
       response.status(500).send("Error: " + e.toString());
     }

@@ -8,6 +8,7 @@ import { QuizzService } from '../../services/quizz.service';
 
 @Component({
   selector: 'app-quizz',
+  standalone: true,
   imports: [QuizzQuestionComponent, NgIf],
   templateUrl: './quizz.component.html',
   styleUrl: './quizz.component.css'

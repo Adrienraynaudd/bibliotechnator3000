@@ -10,10 +10,6 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-list-document',
   templateUrl: './list-document.component.html',
-  imports: [
-    NgFor,
-    ListDocumentCellComponent
-  ],
   styleUrl: './list-document.component.css'
 })
 export class ListDocumentComponent implements OnInit {
