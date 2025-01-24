@@ -1,0 +1,10 @@
+<form (submit)="submitForm()" class="form">
+    <input type="text" class="inputTitle" placeholder="Title" name="title" required>
+    <input type="text" class="inputAuthor" placeholder="Author" name="author" required>
+    <select class="inputLibraryId" name="libraryId" required>
+        <option *ngFor="let library of libraries" [value]="library.id">{{library.name}}</option>
+    </select>
+    <input type="text" class="inputCategorie" placeholder="Categorie" name="categorie" required>
+    <input type="text" class="inputDocumentLink" placeholder="Document Link" name="documentLink" required>
+    <button class="btnSubmit" type="submit">Submit</button>
+</form>
