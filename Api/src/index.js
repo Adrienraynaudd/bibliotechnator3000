@@ -19,9 +19,9 @@ app.use("/user", user_route);
 app.use("/documents", document_route);
 
 
-app.listen(process.env.PORT, () => {
+app.listen(8000, () => {
 //   logger.info(`Server is running on port ${process.env.PORT}`);
-  console.log(`Server is running on port ${process.env.PORT}`);
+  console.log(`Server is running on port ${8000}`);
 });
 
 
