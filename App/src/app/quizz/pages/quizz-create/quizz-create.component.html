@@ -21,7 +21,7 @@
         </div>
         <button type="button" (click)="addAnswer(i)">Add Answer</button>
         <label [for]="'correct'+ (i + 1)">Correct Answer:</label>
-        <input type="number" min="1" formControlName="correctAnswer" id="'correct'+ (j + 1)"/>
+        <input type="number" min="1" formControlName="good_answer" id="'correct'+ (j + 1)"/>
   
         <button *ngIf="i > 0" type="button" (click)="removeQuestion(i)">Remove Question</button>
       </div>

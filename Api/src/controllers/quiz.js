@@ -19,21 +19,46 @@ const getQuizzes = async (req, res) => {
 
 const getQuizById = async (req, res) => {
   const { id } = req.params;
+
   try {
-    const result = await pool.query("SELECT * FROM quiz WHERE id = $1", [id]);
+    const result = await pool.query(
+      `
+      SELECT 
+        qz.id AS id, 
+        qz.type AS type, 
+        qz.max_score, 
+        qz.document_id, 
+        json_agg(json_build_object(
+          'id', qs.id,
+          'type', qs.type,
+          'question', qs.question,
+          'answers', qs.answers,
+          'good_answer', qs.good_answer
+        )) AS questions
+      FROM quiz qz
+      LEFT JOIN question qs ON qz.id = qs.quiz_id
+      WHERE qz.id = $1
+      GROUP BY qz.id
+      `,
+      [id]
+    );
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Quiz not found" });
     }
+
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch quiz" });
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch quiz and its questions" });
   }
 };
+
 
 const getQuizzesByDocumentId = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query("SELECT * FROM quiz WHERE documentId = $1", [id]);
+    const result = await pool.query("SELECT * FROM quiz WHERE document_id = $1", [id]);
     res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch quizzes for the document" });
@@ -49,7 +74,7 @@ const createQuiz = async (req, res) => {
     console.log("test");
 
     const quizResult = await client.query(
-      "INSERT INTO quiz (type, max_score, documentId) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO quiz (type, max_score, document_id) VALUES ($1, $2, $3) RETURNING *",
       [type, max_score, documentId]
     );
     console.log("test");
@@ -82,7 +107,7 @@ const updateQuiz = async (req, res) => {
   const { type, max_score, documentId } = req.body;
   try {
     const result = await pool.query(
-      "UPDATE quiz SET type = $1, max_score = $2, documentId = $3 WHERE id = $4 RETURNING *",
+      "UPDATE quiz SET type = $1, max_score = $2, document_id = $3 WHERE id = $4 RETURNING *",
       [type, max_score, documentId, id]
     );
     if (result.rows.length === 0) {

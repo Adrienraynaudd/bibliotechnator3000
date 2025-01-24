@@ -23,7 +23,7 @@ export class QuizzComponent {
   constructor(private readonly _quizzService: QuizzService, private readonly router: Router) { }    
 
   ngOnInit() {
-    const id = this.router.url.split('/')[-2];
+    const id = this.router.url.split('/')[2];
     this._quizzService.getQuizzById(id).subscribe({
       next: (quizz: Quizz) => {
         this.quizz = quizz;
@@ -35,7 +35,7 @@ export class QuizzComponent {
   }
 
   onAnswer(answer: number) {
-    if (answer === this.quizz.questions[this.currentQuestion].correctAnswer) {
+    if (answer === this.quizz.questions[this.currentQuestion].good_answer) {
       this.score++;
     }
     this.currentQuestion++;
