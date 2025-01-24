@@ -8,10 +8,6 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-document',
-  imports: [
-    NgFor,
-    ListDocumentCellComponent,
-  ],
   templateUrl: './list-document.component.html',
   styleUrl: './list-document.component.css'
 })
