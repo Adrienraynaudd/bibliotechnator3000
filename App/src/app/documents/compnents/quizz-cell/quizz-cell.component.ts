@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Quizz } from '../../models/quizz';
+import { Quizz } from '../../../quizz/models/quizz';
 
 @Component({
   selector: 'app-quizz-cell',

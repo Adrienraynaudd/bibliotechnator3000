@@ -83,9 +83,9 @@ export class QuizzCreateComponent {
       return;
     }
     const quizz: Quizz = {
+      max_score: 0,
+      documentId: this.router.url.split('/')[3],
       type: this.form.value.type,
-      maxscore: 0,
-      documentId: +this.router.url.split('/')[2],
       questions: this.form.value.questions.map((question: any) => {
         return {
           question: question.question,

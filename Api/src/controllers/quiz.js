@@ -1,6 +1,5 @@
-import pg from "pg";
-import logger from "../logger.js";
-import dotenv from "dotenv";
+const pg = require("pg");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
@@ -9,17 +8,16 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-export const getQuizzes = async (req, res) => {
+const getQuizzes = async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM quiz");
     res.status(200).json(result.rows);
   } catch (error) {
-    logger.error(error);
     res.status(500).json({ error: "Failed to fetch quizzes" });
   }
 };
 
-export const getQuizById = async (req, res) => {
+const getQuizById = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query("SELECT * FROM quiz WHERE id = $1", [id]);
@@ -28,35 +26,37 @@ export const getQuizById = async (req, res) => {
     }
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    logger.error(error);
     res.status(500).json({ error: "Failed to fetch quiz" });
   }
 };
 
-export const getQuizzesByDocumentId = async (req, res) => {
+const getQuizzesByDocumentId = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query("SELECT * FROM quiz WHERE documentId = $1", [id]);
     res.status(200).json(result.rows);
   } catch (error) {
-    logger.error(error);
     res.status(500).json({ error: "Failed to fetch quizzes for the document" });
   }
 };
 
-export const createQuiz = async (req, res) => {
+const createQuiz = async (req, res) => {
   const { type, max_score, documentId, questions } = req.body;
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
+    console.log("test");
 
     const quizResult = await client.query(
       "INSERT INTO quiz (type, max_score, documentId) VALUES ($1, $2, $3) RETURNING *",
       [type, max_score, documentId]
     );
+    console.log("test");
 
     const quizId = quizResult.rows[0].id;
+
+    console.log("test");
 
     for (const question of questions) {
       const { type: questionType, question: questionText, answers, good_answer } = question;
@@ -69,15 +69,15 @@ export const createQuiz = async (req, res) => {
     await client.query("COMMIT");
     res.status(201).json(quizResult.rows[0]);
   } catch (error) {
+    console.log(error);
     await client.query("ROLLBACK");
-    logger.error(error);
     res.status(500).json({ error: "Failed to create quiz and questions" });
   } finally {
     client.release();
   }
 };
 
-export const updateQuiz = async (req, res) => {
+const updateQuiz = async (req, res) => {
   const { id } = req.params;
   const { type, max_score, documentId } = req.body;
   try {
@@ -90,12 +90,11 @@ export const updateQuiz = async (req, res) => {
     }
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    logger.error(error);
     res.status(500).json({ error: "Failed to update quiz" });
   }
 };
 
-export const deleteQuiz = async (req, res) => {
+const deleteQuiz = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query("DELETE FROM quiz WHERE id = $1 RETURNING *", [id]);
@@ -104,7 +103,15 @@ export const deleteQuiz = async (req, res) => {
     }
     res.status(200).json({ message: "Quiz deleted successfully" });
   } catch (error) {
-    logger.error(error);
     res.status(500).json({ error: "Failed to delete quiz" });
   }
+};
+
+module.exports = {
+  getQuizzes,
+  getQuizById,
+  getQuizzesByDocumentId,
+  createQuiz,
+  updateQuiz,
+  deleteQuiz,
 };

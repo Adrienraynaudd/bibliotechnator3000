@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NgFor } from '@angular/common';
+import { OnInit } from '@angular/core';
 
 import { DocumentsService } from '../../services/documents/documents.service';
 import { ListDocumentCellComponent } from '../../compnents/list-document-cell/list-document-cell.component';
@@ -9,9 +10,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-list-document',
   templateUrl: './list-document.component.html',
+  imports: [
+    NgFor,
+    ListDocumentCellComponent
+  ],
   styleUrl: './list-document.component.css'
 })
-export class ListDocumentComponent {
+export class ListDocumentComponent implements OnInit {
 
   protected documents: Document[] = [];
 

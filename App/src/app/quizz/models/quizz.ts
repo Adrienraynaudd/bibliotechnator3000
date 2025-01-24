@@ -1,9 +1,9 @@
 import { Question } from './question';
 
 export interface Quizz {
-    id: number;
+    id: string;
     type: string;
-    maxscore: number;
-    documentId: number;
+    max_score: number;
+    documentId: string;
     questions: Question[];
 }
