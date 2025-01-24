@@ -105,7 +105,7 @@ const createQuiz = async (req, res) => {
     }
 
     await pool.query("COMMIT");
-    res.status(201).json(quizResult.rows[0]);
+    res.status(201).send("Quiz created with file");
   } catch (error) {
     console.log(error);
     await pool.query("ROLLBACK");

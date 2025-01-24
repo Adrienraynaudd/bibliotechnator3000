@@ -34,7 +34,7 @@ app.delete("/quizzes/:id", deleteQuiz);
 app.get("/document/:id/quiz", getQuizzesByDocumentId);
 
 describe("Quiz API", () => {
-  it("should create a new quiz", async () => {
+  it("should create a new document", async () => {
     const pool = new Pool();
     pool.query.mockResolvedValueOnce({ rows: [{}] });
 
@@ -61,7 +61,37 @@ describe("Quiz API", () => {
       });
 
     expect(response.status).toBe(201);
+    expect(response.text).toBe("Quiz created with file");
   });
+
+  //   it("should create a new quiz", async () => {
+  //     const pool = new Pool();
+  //     pool.query.mockResolvedValueOnce({ rows: [{}] });
+
+  //     const response = await request(app)
+  //       .post("/quizzes")
+  //       .send({
+  //         type: "multiple-choice",
+  //         max_score: 100,
+  //         document_id: "12345-abcd-67890-efgh",
+  //         questions: [
+  //           {
+  //             type: "text",
+  //             question: "What is the capital of France?",
+  //             answers: ["Paris", "London", "Berlin", "Madrid"],
+  //             good_answer: "Paris",
+  //           },
+  //           {
+  //             type: "text",
+  //             question: "Which planet is known as the Red Planet?",
+  //             answers: ["Earth", "Mars", "Venus", "Jupiter"],
+  //             good_answer: "Mars",
+  //           },
+  //         ],
+  //       });
+
+  //     expect(response.status).toBe(201);
+  //   });
 
   it("should delete a quiz", async () => {
     const pool = new Pool();
