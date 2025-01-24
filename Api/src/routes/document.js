@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-const { createDocument, deleteDocument, getDocument, getAllDocument, updateDocument } = require('../controllers/document.js');
+const { createDocument, deleteDocument, getDocument, getAllDocument, updateDocument, downloadFile } = require('../controllers/document.js');
 const { getQuizzesByDocumentId } = require("../controllers/quiz.js");
 
 
 router.post("/", createDocument);
 
 router.get("/", getAllDocument);
+
+router.get("/:id/download", downloadFile);
 
 router.get("/:id", getDocument);
 
