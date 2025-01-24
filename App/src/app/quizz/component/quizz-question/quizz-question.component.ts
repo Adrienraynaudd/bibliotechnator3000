@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-quizz-question',
+  standalone: true,
   imports: [NgFor],
   templateUrl: './quizz-question.component.html',
   styleUrl: './quizz-question.component.css'

@@ -5,9 +5,12 @@
         <p>{{category}}</p>
         <p>{{synopsis}}</p>
     </div>
+    <button (click)="onDownload()">Download</button>
     <div class="list-quizz">
         <div *ngFor="let quizz of quizzs">
             <app-quizz-cell [quizz]="quizz" (click)="onQuizzClick(quizz.id)"></app-quizz-cell>
         </div>
     </div>
+    <button (click)="onCreateQuizz()">Create Quizz</button>
+    <button (click)="onBack()">Back</button>
 </section>

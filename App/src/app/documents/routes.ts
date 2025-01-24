@@ -6,6 +6,6 @@ import {FormNewDocComponent } from './pages/form-new-doc/form-new-doc.component'
 
 export const routes: Routes = [
     { path: '', component: ListDocumentComponent },
+    {path: 'newdoc', component: FormNewDocComponent},
     {path: ':id', component: DetailComponent},
-    {path: 'newdoc', component: FormNewDocComponent}
 ];

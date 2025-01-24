@@ -30,7 +30,7 @@ export class QuizzCreateComponent {
     return this.formBuilder.group({
       question: ['', Validators.required],
       answers: this.formBuilder.array([]),
-      correctAnswer: [1, [Validators.required, Validators.min(1), Validators.max(1)]],
+      good_answer: [1, [Validators.required, Validators.min(1), Validators.max(1)]],
     });
   }
   
@@ -61,17 +61,17 @@ export class QuizzCreateComponent {
     const answersArray = this.getAnswers(questionIndex)
     answersArray.push(this.createAnswer());
 
-    const correctAnswerControl = this.questions.at(questionIndex).get('correctAnswer');
-    if (!correctAnswerControl) return;
+    const good_answerControl = this.questions.at(questionIndex).get('good_answer');
+    if (!good_answerControl) return;
     const maxAnswerIndex = answersArray.length;
-    correctAnswerControl.setValidators([
+    good_answerControl.setValidators([
       Validators.required,
       Validators.min(0),
       Validators.max(maxAnswerIndex)
     ]);
     
     // Ensure validation is re-triggered
-    correctAnswerControl.updateValueAndValidity();
+    good_answerControl.updateValueAndValidity();
   }
   
   removeAnswer(questionIndex: number, answerIndex: number): void {
@@ -83,25 +83,30 @@ export class QuizzCreateComponent {
       return;
     }
     const quizz: Quizz = {
+      max_score: 0,
+      documentId: this.router.url.split('/')[3],
       type: this.form.value.type,
-      maxscore: 0,
-      documentId: +this.router.url.split('/')[2],
       questions: this.form.value.questions.map((question: any) => {
         return {
           question: question.question,
           answers: question.answers.join(','),
-          correctAnswer: question.correctAnswer - 1
+          type: 'unique',
+          good_answer: question.good_answer - 1
         } as Question;
       })
     } as Quizz;
     this._quizzService.createQuizz(quizz).subscribe({
-      next: (quizz: Quizz) => {
-        this.router.navigate([`/documents/${this.router.url.split('/')[2]}/`, quizz.id]);
+      next: () => {
+        this.onBack();
       },
       error: (error: any) => {
         console.error(error);
       }
     });
+  }
+
+  onBack(): void {
+    this.router.navigate([`/documents/${this.router.url.split('/')[3]}/`]);
   }
 
 }

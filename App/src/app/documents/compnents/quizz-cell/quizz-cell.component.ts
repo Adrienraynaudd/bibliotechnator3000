@@ -1,14 +1,13 @@
 import { Component, Input } from '@angular/core';
-import { Quizz } from '../../models/quizz';
+import { Quizz } from '../../../quizz/models/quizz';
 
 @Component({
   selector: 'app-quizz-cell',
-  imports: [],
   templateUrl: './quizz-cell.component.html',
-  styleUrl: './quizz-cell.component.css'
+  styleUrl: './quizz-cell.component.css',
+  standalone: true,
 })
 export class QuizzCellComponent {
   @Input({required: true}) quizz: Quizz = {} as Quizz;
 
-  
 }

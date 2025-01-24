@@ -12,6 +12,9 @@ const pool = new Pool({
   connectionString: "postgres://admin:admin@localhost:5432/ultimatelibrary",
 });
 
+// Define the base URL for document links
+const BASE_URL = process.env.BASE_URL || "http://localhost:8000/uploads/";
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = "uploads/";
@@ -48,19 +51,43 @@ const createDocument = async (request, response) => {
     const documentLink = request.file ? request.file.filename : null;
 
     try {
-      await pool.query(
+      const result = await pool.query(
         `INSERT INTO document (title, author, library_id, category, document_link) 
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
         [title, author, library_id, category, documentLink]
       );
-
-      response.status(201).send("Document created with file");
+      response.status(201).json(result.rows[0]);
     } catch (e) {
       response.status(500).send("Error: " + e.toString());
     }
   });
 };
+const downloadFile = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const result = await pool.query(
+      "SELECT * FROM document WHERE id = $1",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Document not found");
+    }
+
+    const document = result.rows[0];
+
+    const filePath = path.join(__dirname, "..", "..", "uploads", document.document_link);
+    if (!fs.existsSync(filePath)) {
+      console.log(filePath);
+      return res.status(404).send("File not found");
+    }
+
+    res.download(filePath, document.title + path.extname(document.document_link));
+  } catch (err) {
+    res.status(500).send("Error retrieving document: " + err.message);
+  }
+};
 const deleteDocument = async (request, response) => {
   const documentId = request.params.id;
 
@@ -143,5 +170,6 @@ module.exports = {
   deleteDocument,
   getDocument,
   getAllDocument,
-  updateDocument
+  updateDocument,
+  downloadFile
 };

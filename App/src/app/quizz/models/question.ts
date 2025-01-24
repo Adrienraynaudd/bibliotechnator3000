@@ -3,5 +3,5 @@ export interface Question{
     type: string;
     question: string;
     answers: string;
-    correctAnswer: number;
+    good_answer: number;
 }
