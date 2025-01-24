@@ -50,7 +50,26 @@ const getAllUsers = async (request, response) => {
     response.status(500).send("Error: ");
   }
 };
-
+const loginUser = async (request, response) => {
+  let route = `${request.method} ${request.baseUrl}${request.path}`;
+  const { email, password } = request.body;
+  try {
+    const { rows } = await pool.query(`SELECT * FROM "user" WHERE email=$1`, [
+      email
+    ]);
+    if (bcrypt.compareSync(password, rows[0].password)) {
+      logger.info(`${route} - ${rows}`);
+      response.status(201).send({
+        token: generateAccessToken(email),
+      });
+    } else {
+      response.status(401).send("Wrong password");
+    }
+  } catch (error) {
+    logger.info(`${route} - ${error}`);
+    response.status(500).send("An error occurred");
+  }
+};
 const deleteUser = async (request, response) => {
   const { id } = request.params;
   const route = `DELETE /user/${id}`;
@@ -102,6 +121,7 @@ const updateUser = async (request, response) => {
 
 module.exports = {
   createUser,
+  loginUser,
   getUser,
   getAllUsers,
   deleteUser,

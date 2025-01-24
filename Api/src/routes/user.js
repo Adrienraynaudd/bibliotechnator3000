@@ -25,4 +25,5 @@ router.put("/:id", [authenticateToken], updateUser);
 // this route remove a user by id
 router.delete("/:id", [authenticateToken], deleteUser);
 
-export default router;
+module.exports = router;
+

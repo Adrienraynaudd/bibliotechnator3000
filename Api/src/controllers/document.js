@@ -37,21 +37,6 @@ const upload = multer({
   },
 });
 
-const createLibrary = async (request, response) => {
-  const { name } = request.body;
-
-  try {
-    const { rows } = await pool.query(
-      `INSERT INTO library (name) VALUES ($1) RETURNING *`,
-      [name]
-    );
-
-    response.status(201).json(rows[0]);
-  } catch (error) {
-    response.status(500).send("Error: " + error.message);
-  }
-};
-
 const createDocument = async (request, response) => {
   const uploadFile = upload.single("documentFile");
   uploadFile(request, response, async (err) => {
@@ -154,7 +139,6 @@ const updateDocument = async (request, response) => {
 };
 
 module.exports = {
-  createLibrary,
   createDocument,
   deleteDocument,
   getDocument,
