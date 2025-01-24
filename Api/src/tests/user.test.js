@@ -1,7 +1,13 @@
 const request = require("supertest");
 const express = require("express");
 const { Pool } = require("pg");
-const { createUser, deleteUser, getUser, getAllUsers, updateUser } = require("../controllers/user.js");
+const {
+  createUser,
+  deleteUser,
+  getUser,
+  getAllUsers,
+  updateUser,
+} = require("../controllers/user.js");
 
 jest.mock("pg", () => {
   const mClient = {
@@ -32,7 +38,11 @@ describe("User API", () => {
 
     const response = await request(app)
       .post("/user")
-      .send({ name: "User Test", email: "test@test.com", password: "password" });
+      .send({
+        name: "User Test",
+        email: "test@test.com",
+        password: "password",
+      });
 
     expect(response.status).toBe(201);
   });
@@ -67,8 +77,19 @@ describe("User API", () => {
   it("should update a user", async () => {
     const pool = new Pool();
     pool.query
-      .mockResolvedValueOnce({ rows: [{ id: 1, name: "OriginalName", email: "original@test.com" }] })
-      .mockResolvedValueOnce({ rows: [{ id: 1, name: "TestModfi", email: "original@test.com", password: "newPassword" }] });
+      .mockResolvedValueOnce({
+        rows: [{ id: 1, name: "OriginalName", email: "original@test.com" }],
+      })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 1,
+            name: "TestModfi",
+            email: "original@test.com",
+            password: "newPassword",
+          },
+        ],
+      });
 
     const response = await request(app)
       .put("/user/1")

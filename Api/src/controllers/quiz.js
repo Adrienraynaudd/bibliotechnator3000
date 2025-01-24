@@ -54,11 +54,13 @@ const getQuizById = async (req, res) => {
   }
 };
 
-
 const getQuizzesByDocumentId = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query("SELECT * FROM quiz WHERE document_id = $1", [id]);
+    const result = await pool.query(
+      "SELECT * FROM quiz WHERE document_id = $1",
+      [id]
+    );
     res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch quizzes for the document" });
@@ -84,21 +86,30 @@ const createQuiz = async (req, res) => {
     console.log("test");
 
     for (const question of questions) {
-      const { type: questionType, question: questionText, answers, good_answer } = question;
-      await client.query(
+      const {
+        type: questionType,
+        question: questionText,
+        answers,
+        good_answer,
+      } = question;
+      await pool.query(
         "INSERT INTO question (type, question, answers, good_answer, quiz_id) VALUES ($1, $2, $3, $4, $5)",
-        [questionType, questionText, JSON.stringify(answers), good_answer, quizId]
+        [
+          questionType,
+          questionText,
+          JSON.stringify(answers),
+          good_answer,
+          quizId,
+        ]
       );
     }
 
-    await client.query("COMMIT");
+    await pool.query("COMMIT");
     res.status(201).json(quizResult.rows[0]);
   } catch (error) {
     console.log(error);
-    await client.query("ROLLBACK");
+    await pool.query("ROLLBACK");
     res.status(500).json({ error: "Failed to create quiz and questions" });
-  } finally {
-    client.release();
   }
 };
 
@@ -122,7 +133,7 @@ const updateQuiz = async (req, res) => {
 const deleteQuiz = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query("DELETE FROM quiz WHERE id = $1 RETURNING *", [id]);
+    const result = await pool.query("DELETE FROM quiz WHERE id = $1", [id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Quiz not found" });
     }
