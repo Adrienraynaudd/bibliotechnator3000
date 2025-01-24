@@ -124,7 +124,7 @@ const updateQuiz = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Quiz not found" });
     }
-    res.status(200).json(result.rows[0]);
+    res.status(200).send("Successfully updated");
   } catch (error) {
     res.status(500).json({ error: "Failed to update quiz" });
   }

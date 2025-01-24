@@ -101,38 +101,15 @@ describe("Quiz API", () => {
 
   it("should update a quiz", async () => {
     const pool = new Pool();
-    pool.query
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 1,
-            type: "multiple-choice",
-            max_score: 100,
-            document_id: "12345-abcd-67890-efgh",
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 1,
-            type: "single-choice",
-            max_score: 1000,
-            document_id: "12345-abcd-67890-efgh",
-          },
-        ],
-      });
+    pool.query.mockResolvedValueOnce({});
 
-    const response = await request(app)
-      .put("/quizzes/1")
-      .send({ type: "single-choice", max_score: 1000 });
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      id: 1,
-      type: "single-choice",
-      max_score: 1000,
+    const response = await request(app).put("/quizzes/1").send({
+      type: "multiple-choice",
+      max_score: 100,
       document_id: "12345-abcd-67890-efgh",
     });
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe("Successfully updated");
   });
 });
