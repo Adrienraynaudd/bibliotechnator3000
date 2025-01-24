@@ -57,7 +57,7 @@ export class FormNewDocComponent implements OnInit {
       formData.append('title', this.form.value.title);
       formData.append('author', this.form.value.author);
       formData.append('category', this.form.value.category);
-      formData.append('library_id', '1'); // ID de la bibliothèque par défaut
+      formData.append('library_id', 'dbe64b25-5378-48ec-8673-2aafab150acc'); // ID de la bibliothèque par défaut
       formData.append('documentFile', this.selectedFile); // Clé correspondant au contrôleur backend
   
       this._documentService.postDocument(formData).subscribe({
